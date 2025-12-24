@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # 1. LOAD BALANCER
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    networks:
+      - flashnet
+
+  # 2. APP CLUSTER (IPHONE SERVER)
+  web:
+    build: ./app
+    restart: always             # FITUR: Self-Healing (Hidup lagi kalau mati)
+    deploy:
+      replicas: 3               # FITUR: Scalability
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    networks:
+      - flashnet
+
+  # 3. DATABASE & CACHE
+  redis:
+    image: redis:alpine
+    command: redis-server --appendonly yes  # FITUR: Data Persistence
+    volumes:
+      - redis_data:/data
+    networks:
+      - flashnet
+
+  # 4. MONITORING STACK (MATA DEWA)
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - flashnet
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - flashnet
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - flashnet
+
+networks:
+  flashnet:
+
+volumes:
+  redis_data:

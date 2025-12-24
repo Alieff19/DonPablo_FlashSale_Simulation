@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>iPhone 17 Launch Event</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            font-size: 48px;
+            background: linear-gradient(180deg, #ffb6ff, #b344ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .sub-header {
+            color: #86868b;
+            font-size: 21px;
+            margin-bottom: 40px;
+        }
+
+        .product-card {
+            background: #1d1d1f;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+        }
+
+        .price-tag {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            margin: 20px 0;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #6e6e73;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .stock-box {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff3b30;
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            font-weight: bold;
+        }
+
+        button {
+            background: #0071e3;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 20px;
+            border-radius: 980px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        button:hover {
+            background: #0077ed;
+            transform: scale(1.02);
+        }
+
+        button:disabled {
+            background: #333;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .server-status {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #424245;
+            font-family: monospace;
+            border-top: 1px solid #333;
+            padding-top: 15px;
+        }
+
+        #logs {
+            text-align: left;
+            height: 120px;
+            overflow-y: auto;
+            background: #000;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 11px;
+            border: 1px solid #333;
+            color: #0f0;
+        }
+
+        .live-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #0f0;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <p style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #86868b;">APPLE EVENT 2025</p>
+        <h1>iPhone 17 Pro Max</h1>
+        <p class="sub-header">Titanium. So fast. So Pro.</p>
+
+        <div class="product-card">
+            <img src="{{ url_for('static', filename='ip17.jpg') }}" alt="iPhone 17" width="300"
+                style="margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">
+
+            <div class="price-tag">
+                <span class="old-price">Rp 32.999.000</span> Rp 25.749.000
+            </div>
+            <div class="stock-box">
+                🔥 SISA STOK GLOBAL: <span id="stok" style="font-size: 20px;">{{ stok }}</span> UNIT
+            </div>
+            <button id="btn" onclick="beli()">BELI SEKARANG</button>
+            <div style="margin-top: 15px; font-size: 12px; color: #555; cursor: pointer;" onclick="reset()">[ RESET
+                SYSTEM ]</div>
+
+            <div class="server-status">
+                <div style="margin-bottom: 5px;"><span class="live-dot"></span> SYSTEM LIVE MONITORING</div>
+                Dilayani oleh Node: <b id="container" style="color: #0071e3;">{{ container }}</b>
+            </div>
+            <div id="logs">
+                <div>> Initializing connection to Apple Cloud...</div>
+                <div>> Waiting for flash sale start...</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        async function beli() {
+            const btn = document.getElementById('btn');
+            btn.disabled = true; btn.innerText = "MEMPROSES...";
+            try {
+                let res = await fetch('/beli', { method: 'POST' });
+                let data = await res.json();
+                document.getElementById('stok').innerText = data.sisa;
+                document.getElementById('container').innerText = data.container;
+
+                let color = data.status === 'success' ? '#0f0' : '#ff3b30';
+                let logMsg = `<div style="color:${color}">> [${data.container}] ${data.msg}</div>`;
+                document.getElementById('logs').innerHTML = logMsg + document.getElementById('logs').innerHTML;
+
+                if (data.status === 'success') { btn.disabled = false; btn.innerText = "BELI LAGI"; }
+                else { btn.innerText = "SOLD OUT"; }
+            } catch (e) { console.log(e); btn.disabled = false; }
+        }
+        async function reset() { await fetch('/reset', { method: 'POST' }); location.reload(); }
+    </script>
+</body>
+
+</html>

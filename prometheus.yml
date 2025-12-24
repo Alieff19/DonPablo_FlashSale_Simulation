@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 2s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # TARGET BARU: Membaca data langsung dari Aplikasi Flask
+  - job_name: 'flash-sale-app'
+    static_configs:
+      # Docker DNS akan otomatis mencari semua container bernama 'web'
+      - targets: ['web:5000']
