@@ -60,7 +60,10 @@ DONPABLO/
     ├── requirements.txt    # Dependensi Python
     ├── app.py              # Backend Logic
     ├── static/
-    │   └── ip17.jpg        # Aset Gambar
+    │   └── ip17a.jpg       # Aset Gambar
+    │   └── ip17b.jpg
+    │   └── ip17c.jpg
+    │   └── ip17d.jpg
     └── templates/
         └── index.html      # Frontend UI
 ```
