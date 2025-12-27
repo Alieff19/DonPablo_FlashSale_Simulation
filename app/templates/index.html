@@ -3,185 +3,828 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>iPhone 17 Launch Event</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone 17 Pro | Cosmic Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <style>
-        body {
-            background-color: #000;
-            color: #f5f5f7;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            text-align: center;
-            padding: 40px 20px;
+        :root {
+            --accent: #ff9500;
+            --accent-glow: #ff5e3a;
+            --bg: #000000;
+            --card-bg: rgba(28, 28, 30, 0.6);
+            --text-gray: #86868b;
+        }
+
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .container {
-            max-width: 600px;
-            margin: auto;
+        body {
+            background-color: var(--bg);
+            color: #f5f5f7;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
+            cursor: default;
         }
 
-        h1 {
-            font-size: 48px;
-            background: linear-gradient(180deg, #ffb6ff, #b344ff);
+        /* --- BACKGROUND ATMOSPHERE --- */
+        .mesh-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 30%, #3a1500 0%, #000000 80%);
+            z-index: -2;
+        }
+
+        /* Animated Stars Background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .glow-spot {
+            position: absolute;
+            width: 1000px;
+            height: 1000px;
+            background: radial-gradient(circle, rgba(255, 123, 0, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: -1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: glow-pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes glow-pulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        /* --- DYNAMIC ISLAND NOTIFICATION --- */
+        #island {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+            border: 1px solid rgba(255, 149, 0, 0.3);
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            z-index: 9999;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 149, 0, 0.2);
+            backdrop-filter: blur(20px);
+        }
+
+        /* --- LAYOUT SECTIONS --- */
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        .hero-title {
+            font-size: clamp(3.5rem, 10vw, 7rem);
+            font-weight: 700;
+            line-height: 1.1;
+            text-align: center;
+            letter-spacing: -2px;
+            position: relative;
+        }
+
+        .gradient-text {
+            background: linear-gradient(180deg, #ffffff 20%, #8b8b99 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            font-weight: 800;
+            text-shadow: 0 0 80px rgba(255, 149, 0, 0.3);
         }
 
-        .sub-header {
-            color: #86868b;
-            font-size: 21px;
-            margin-bottom: 40px;
+        .cosmic-text {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            font-weight: 700;
+            letter-spacing: 8px;
+            margin-top: 20px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #ffcc33, #ff9500, #ff5e3a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            position: relative;
         }
 
-        .product-card {
-            background: #1d1d1f;
+        .cosmic-text::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -100px;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff9500);
+        }
+
+        .cosmic-text::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -100px;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #ff9500, transparent);
+        }
+
+        .scroll-hint {
+            margin-top: 40px;
+            color: var(--text-gray);
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-icon {
+            width: 30px;
+            height: 50px;
+            border: 2px solid rgba(255, 149, 0, 0.5);
             border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid #333;
+            position: relative;
+        }
+
+        .scroll-icon::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: #ff9500;
+            border-radius: 2px;
+            animation: scroll-down 2s infinite;
+        }
+
+        @keyframes scroll-down {
+            0% {
+                top: 8px;
+                opacity: 1;
+            }
+
+            100% {
+                top: 25px;
+                opacity: 0;
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* --- GLASS PRODUCT CARD --- */
+        .product-card {
+            background: linear-gradient(135deg, rgba(28, 28, 30, 0.8) 0%, rgba(18, 18, 20, 0.8) 100%);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 149, 0, 0.2);
+            border-radius: 40px;
+            padding: 60px 50px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.9),
+                0 0 60px rgba(255, 149, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 149, 0, 0.05) 0%, transparent 70%);
+            animation: rotate-glow 10s linear infinite;
+        }
+
+        @keyframes rotate-glow {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotateY(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotateY(5deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotateY(0deg);
+            }
+        }
+
+        /* Product Carousel */
+        .product-carousel {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            min-height: 200px;
+            display: inline-block;
+        }
+
+        .product-img {
+            display: none;
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 30px 60px rgba(255, 94, 58, 0.4));
+            animation: float 6s ease-in-out infinite;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+            border-radius: 20px;
+            /* Optional: smooth corners if user wants "kotak" look */
+        }
+
+        .product-img.active {
+            display: block;
+            position: relative;
+            opacity: 1;
+        }
+
+        .product-card:hover .product-img.active {
+            transform: scale(1.05);
+        }
+
+        .carousel-btn {
+            position: absolute;
+            background: transparent;
+            border: none;
+            color: #ff9500;
+            width: 45px;
+            height: 45px;
+            font-size: 40px;
+            /* Increased size for visibility without bubble */
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            padding: 0;
+            outline: none;
+        }
+
+        .carousel-btn:hover {
+            transform: scale(1.2);
+            color: #ffcc33;
+            background: transparent;
+            box-shadow: none;
+            text-shadow: 0 0 20px rgba(255, 149, 0, 0.8);
+        }
+
+        .carousel-btn.prev {
+            left: -40px;
+        }
+
+        .carousel-btn.next {
+            right: -40px;
+        }
+
+        .carousel-dots {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 149, 0, 0.3);
+            border: 1px solid rgba(255, 149, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #ff9500;
+            box-shadow: 0 0 15px rgba(255, 149, 0, 0.6);
+            transform: scale(1.3);
+        }
+
+        .dot:hover {
+            background: rgba(255, 149, 0, 0.6);
+            transform: scale(1.2);
+        }
+
+        .price-section {
+            margin: 30px 0;
         }
 
         .price-tag {
-            font-size: 32px;
-            font-weight: bold;
-            color: #fff;
-            margin: 20px 0;
+            font-size: 48px;
+            font-weight: 800;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #ffffff, #ff9500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
         }
 
         .old-price {
-            text-decoration: line-through;
-            color: #6e6e73;
             font-size: 18px;
-            margin-right: 10px;
+            color: var(--text-gray);
+            text-decoration: line-through;
+            margin-bottom: 5px;
         }
 
-        .stock-box {
-            background: rgba(255, 0, 0, 0.1);
-            color: #ff3b30;
-            padding: 10px;
+        .discount-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff5e3a, #ff9500);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 10px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 94, 58, 0.4);
+        }
+
+        /* Stock Pill */
+        .stock-pill {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.15), rgba(255, 94, 58, 0.15));
+            border: 1px solid rgba(255, 149, 0, 0.4);
+            color: #ff9500;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.2);
+        }
+
+        .dot-pulse {
+            width: 10px;
+            height: 10px;
+            background-color: #ff9500;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 0 15px #ff9500;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                box-shadow: 0 0 15px #ff9500;
+            }
+
+            50% {
+                opacity: 0.5;
+                box-shadow: 0 0 30px #ff9500;
+            }
+
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 15px #ff9500;
+            }
+        }
+
+        /* --- BUTTONS --- */
+        .btn-buy {
+            background: linear-gradient(135deg, #ffffff, #f0f0f0);
+            color: #000;
+            border: none;
+            padding: 22px 0;
+            width: 100%;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-buy::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 149, 0, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-buy:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn-buy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #fff, #fff);
+        }
+
+        .btn-buy:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            margin-top: 25px;
+            font-size: 11px;
+            color: #666;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            padding: 8px 16px;
             border-radius: 8px;
             display: inline-block;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 59, 48, 0.3);
-            font-weight: bold;
         }
 
-        button {
-            background: #0071e3;
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            font-size: 20px;
-            border-radius: 980px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: 600;
-            transition: transform 0.2s, background 0.2s;
+        .btn-reset:hover {
+            color: #ff9500;
+            background: rgba(255, 149, 0, 0.1);
         }
 
-        button:hover {
-            background: #0077ed;
-            transform: scale(1.02);
-        }
-
-        button:disabled {
-            background: #333;
-            color: #888;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .server-status {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #424245;
-            font-family: monospace;
-            border-top: 1px solid #333;
-            padding-top: 15px;
-        }
-
-        #logs {
-            text-align: left;
-            height: 120px;
-            overflow-y: auto;
-            background: #000;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-family: monospace;
+        /* --- CONSOLE LOGS --- */
+        #console {
+            margin-top: 35px;
+            background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+            border-radius: 16px;
+            padding: 18px;
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
             font-size: 11px;
-            border: 1px solid #333;
-            color: #0f0;
+            text-align: left;
+            border: 1px solid rgba(255, 149, 0, 0.2);
+            border-left: 3px solid var(--accent);
+            height: 90px;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column-reverse;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
-        .live-dot {
-            height: 10px;
-            width: 10px;
-            background-color: #0f0;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
-            animation: blink 1s infinite;
+        .log-entry {
+            margin-bottom: 6px;
+            animation: log-appear 0.3s ease;
+            line-height: 1.6;
         }
 
-        @keyframes blink {
-            50% {
+        @keyframes log-appear {
+            from {
                 opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+
+            .cosmic-text::before,
+            .cosmic-text::after {
+                display: none;
+            }
+
+            .product-card {
+                padding: 40px 30px;
+                max-width: 90%;
+            }
+
+            .carousel-container {
+                width: 100%;
+                height: auto;
+            }
+
+            .carousel-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 22px;
+            }
+
+            .carousel-btn.prev {
+                left: -40px;
+            }
+
+            .carousel-btn.next {
+                right: -40px;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <p style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #86868b;">APPLE EVENT 2025</p>
-        <h1>iPhone 17 Pro Max</h1>
-        <p class="sub-header">Titanium. So fast. So Pro.</p>
 
-        <div class="product-card">
-            <img src="{{ url_for('static', filename='ip17.jpg') }}" alt="iPhone 17" width="300"
-                style="margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">
+    <div class="mesh-gradient"></div>
+    <div class="stars" id="starsContainer"></div>
+    <div class="glow-spot" id="mouseGlow"></div>
 
-            <div class="price-tag">
-                <span class="old-price">Rp 32.999.000</span> Rp 25.749.000
-            </div>
-            <div class="stock-box">
-                🔥 SISA STOK GLOBAL: <span id="stok" style="font-size: 20px;">{{ stok }}</span> UNIT
-            </div>
-            <button id="btn" onclick="beli()">BELI SEKARANG</button>
-            <div style="margin-top: 15px; font-size: 12px; color: #555; cursor: pointer;" onclick="reset()">[ RESET
-                SYSTEM ]</div>
+    <div id="island">
+        <div style="width: 10px; height: 10px; background: #30d158; border-radius: 50%; box-shadow: 0 0 8px #30d158;">
+        </div>
+        <span id="island-text">System Synced</span>
+    </div>
 
-            <div class="server-status">
-                <div style="margin-bottom: 5px;"><span class="live-dot"></span> SYSTEM LIVE MONITORING</div>
-                Dilayani oleh Node: <b id="container" style="color: #0071e3;">{{ container }}</b>
-            </div>
-            <div id="logs">
-                <div>> Initializing connection to Apple Cloud...</div>
-                <div>> Waiting for flash sale start...</div>
+    <section class="section">
+        <h1 class="hero-title">
+            <span class="gradient-text">iPhone 17 Pro Max</span>
+        </h1>
+        <div class="cosmic-text" id="subTitle">COSMIC ORANGE</div>
+
+        <div class="scroll-hint">
+            <p>Scroll untuk mengungkap kekuatan sejati</p>
+            <div class="scroll-icon"></div>
+        </div>
+    </section>
+
+    <section class="section" style="padding-bottom: 100px;">
+        <div class="product-card" id="mainCard">
+            <div class="card-content">
+                <div class="stock-pill">
+                    <div class="dot-pulse" id="status-dot"></div>
+                    <span id="stok-label">GLOBAL STOCK: {{ stok }} UNIT</span>
+                </div>
+
+                <div class="product-carousel">
+                    <button class="carousel-btn prev" onclick="changeImage(-1)">‹</button>
+                    <div class="carousel-container">
+                        <img src="{{ url_for('static', filename='ip17a.jpg') }}" alt="iPhone 17 Pro Max"
+                            class="product-img active" data-index="0">
+                        <img src="{{ url_for('static', filename='ip17b.jpg') }}" alt="iPhone 17 Pro Max"
+                            class="product-img" data-index="1">
+                        <img src="{{ url_for('static', filename='ip17c.jpg') }}" alt="iPhone 17 Pro Max"
+                            class="product-img" data-index="2">
+                        <img src="{{ url_for('static', filename='ip17d.jpg') }}" alt="iPhone 17 Pro Max"
+                            class="product-img" data-index="3">
+                    </div>
+                    <button class="carousel-btn next" onclick="changeImage(1)">›</button>
+                </div>
+                <div class="carousel-dots">
+                    <span class="dot active" onclick="goToImage(0)"></span>
+                    <span class="dot" onclick="goToImage(1)"></span>
+                    <span class="dot" onclick="goToImage(2)"></span>
+                    <span class="dot" onclick="goToImage(3)"></span>
+                </div>
+
+                <div class="price-section">
+                    <div class="old-price">Rp 32.999.000</div>
+                    <div class="price-tag">Rp 25.749.000</div>
+                    <div class="discount-badge">HEMAT 22%</div>
+                </div>
+
+                <button class="btn-buy" id="btn" onclick="beli()">Dapatkan Sekarang</button>
+
+                <div id="console">
+                    <div class="log-entry" style="color: #555;">> Waiting for user input...</div>
+                    <div class="log-entry" style="color: #555;">> Connection to Docker Node: <span
+                            style="color: var(--accent);">{{ container }}</span> established.</div>
+                </div>
+
+                <div class="btn-reset" onclick="reset()">[ REBOOT SYSTEM KERNEL ]</div>
             </div>
         </div>
-    </div>
+    </section>
+
     <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Create Stars
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.opacity = Math.random() * 0.5 + 0.3;
+                container.appendChild(star);
+            }
+        }
+        createStars();
+
+        // Mouse Glow Effect
+        window.addEventListener('mousemove', (e) => {
+            gsap.to("#mouseGlow", {
+                x: (e.clientX - window.innerWidth / 2) * 1.5,
+                y: (e.clientY - window.innerHeight / 2) * 1.5,
+                duration: 2,
+                ease: "power2.out"
+            });
+        });
+
+        // Hero Animation
+        const tl = gsap.timeline();
+        tl.from(".hero-title", { opacity: 0, y: 50, duration: 1.5, ease: "power3.out" })
+            .to("#subTitle", { opacity: 1, letterSpacing: "12px", duration: 2, ease: "power2.out" }, "-=1");
+
+        // Product Card Scroll Animation
+        gsap.from("#mainCard", {
+            scrollTrigger: {
+                trigger: "#mainCard",
+                start: "top bottom",
+                end: "center center",
+                scrub: 1
+            },
+            y: 150,
+            scale: 0.8,
+            opacity: 0,
+            rotationX: 20,
+            transformOrigin: "center top"
+        });
+
+        // Backend Logic
+        let currentImageIndex = 0;
+        const images = document.querySelectorAll('.product-img');
+        const dots = document.querySelectorAll('.dot');
+
+        function changeImage(direction) {
+            images[currentImageIndex].classList.remove('active');
+            dots[currentImageIndex].classList.remove('active');
+
+            currentImageIndex += direction;
+            if (currentImageIndex >= images.length) currentImageIndex = 0;
+            if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+
+            images[currentImageIndex].classList.add('active');
+            dots[currentImageIndex].classList.add('active');
+        }
+
+        function goToImage(index) {
+            images[currentImageIndex].classList.remove('active');
+            dots[currentImageIndex].classList.remove('active');
+
+            currentImageIndex = index;
+
+            images[currentImageIndex].classList.add('active');
+            dots[currentImageIndex].classList.add('active');
+        }
+
+        // Auto slide every 4 seconds
+        setInterval(() => {
+            changeImage(1);
+        }, 4000);
+
         async function beli() {
             const btn = document.getElementById('btn');
-            btn.disabled = true; btn.innerText = "MEMPROSES...";
+            const island = document.getElementById('island');
+            const islandText = document.getElementById('island-text');
+
+            btn.disabled = true;
+            btn.innerText = "VERIFYING REQUEST...";
+
             try {
                 let res = await fetch('/beli', { method: 'POST' });
                 let data = await res.json();
-                document.getElementById('stok').innerText = data.sisa;
-                document.getElementById('container').innerText = data.container;
 
-                let color = data.status === 'success' ? '#0f0' : '#ff3b30';
-                let logMsg = `<div style="color:${color}">> [${data.container}] ${data.msg}</div>`;
-                document.getElementById('logs').innerHTML = logMsg + document.getElementById('logs').innerHTML;
+                document.getElementById('stok-label').innerText = `GLOBAL STOCK: ${data.sisa} UNIT`;
 
-                if (data.status === 'success') { btn.disabled = false; btn.innerText = "BELI LAGI"; }
-                else { btn.innerText = "SOLD OUT"; }
-            } catch (e) { console.log(e); btn.disabled = false; }
+                islandText.innerText = data.status === 'success' ? "Pesanan Berhasil Diverifikasi" : "Stok Habis!";
+                const islandColor = data.status === 'success' ? '#30d158' : '#ff453a';
+                island.style.borderColor = islandColor;
+
+                gsap.to(island, { opacity: 1, y: 50, scale: 1, duration: 0.5, ease: "back.out(1.7)" });
+                setTimeout(() => {
+                    gsap.to(island, { opacity: 0, y: 0, scale: 0.9, duration: 0.5 });
+                }, 3000);
+
+                const consoleDiv = document.getElementById('console');
+                const newLog = document.createElement('div');
+                newLog.className = "log-entry";
+                newLog.innerHTML = `<span style="color:${islandColor}">> [${data.container}]</span> ${data.msg}`;
+                consoleDiv.prepend(newLog);
+
+                if (data.status === 'success') {
+                    btn.disabled = false;
+                    btn.innerText = "BELI LAGI";
+                } else {
+                    btn.innerText = "SOLD OUT";
+                    btn.style.background = "#333";
+                    btn.style.color = "#888";
+                    document.getElementById('status-dot').style.backgroundColor = "#ff453a";
+                    document.getElementById('status-dot').style.boxShadow = "0 0 10px #ff453a";
+                }
+
+            } catch (e) {
+                console.error(e);
+                btn.disabled = false;
+                btn.innerText = "Coba Lagi";
+            }
         }
-        async function reset() { await fetch('/reset', { method: 'POST' }); location.reload(); }
+
+        async function reset() {
+            const btn = document.querySelector('.btn-reset');
+            btn.innerText = "REBOOTING...";
+            await fetch('/reset', { method: 'POST' });
+            location.reload();
+        }
     </script>
 </body>
 

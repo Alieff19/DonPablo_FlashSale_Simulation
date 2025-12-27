@@ -1,4 +1,4 @@
-# 🚀 iPhone 17 Launch — Flash Sale Microservices System
+# 🚀 iPhone 17 Pro Max Launch — Flash Sale Microservices System
 
 ![Docker](https://img.shields.io/badge/Container-Docker-blue.svg?style=for-the-badge&logo=docker)
 ![Python](https://img.shields.io/badge/Backend-Flask-green.svg?style=for-the-badge&logo=python)
@@ -23,7 +23,7 @@ Sistem dibangun menggunakan arsitektur **Microservices** untuk menangani **traff
 |------|----------|-----------|
 | 🛡️ **Race Condition Proof** | Menjamin stok tetap akurat meskipun 1000+ request/detik | Redis Atomic Operation |
 | ⚖️ **Load Balancing** | Distribusi beban otomatis ke beberapa replika server | Nginx (Round Robin) |
-| ❤️ **Self-Healing System** | Container otomatis pulih saat terjadi kegagalan | Docker Compose |
+| ❤️ **Reliable Infrastructure** | Pemulihan cepat berdasarkan kondisi ideal (*Desired State*) | Docker Compose |
 | 👁️ **Observability** | Monitoring trafik sukses vs gagal secara real-time | Prometheus & Grafana |
 | 💎 **Modern UI** | Tampilan frontend bertema *Apple Event* | HTML5 & CSS3 |
 
@@ -60,7 +60,7 @@ DONPABLO/
     ├── requirements.txt    # Dependensi Python
     ├── app.py              # Backend Logic
     ├── static/
-    │   └── iphone17pro.png # Aset Gambar
+    │   └── ip17.jpg        # Aset Gambar
     └── templates/
         └── index.html      # Frontend UI
 ```
@@ -79,8 +79,10 @@ DONPABLO/
 ### 1️⃣ Clone & Build
 
 ```bash
-git clone https://github.com/USERNAME_KAMU/repo-ini.git
+git clone https://github.com/Alieff19/DonPablo_FlashSale_Simulation
+```
 cd repo-ini
+```
 docker-compose up -d --build
 ```
 
@@ -93,56 +95,72 @@ Buka browser favorit Anda dan kunjungi:
 
 ---
 
-## 🧪 Skenario Pengujian (Demo Script)
+## 🧪 Skenario Pengujian
 
-### 🟢 Skenario A — Load Balancing Check
-
-1. Buka `http://localhost`
-2. Klik **BELI SEKARANG** beberapa kali
-3. Perhatikan teks: `Dilayani oleh Node: [ID Container]`
-
-✅ **Hasil:**  
-ID container berubah-ubah → load balancing berjalan
+Berikut adalah 3 skenario pengujian untuk membuktikan sistem memenuhi kriteria **Scalable**, **Reliable**, dan **Secure (Aman)**
 
 ---
 
-### 🔴 Skenario B — Stress Test (High Traffic)
+### 🟢 A. Uji Scalability — Load Balancing Check
+*Membuktikan sistem dapat membagi beban trafik ke banyak server secara otomatis.*
 
-Mensimulasikan **500 pembeli bersamaan**:
+1. Buka browser ke http://localhost
+2. Klik tombol **BELI SEKARANG** beberapa kali secara manual.
+3. Perhatikan teks di bawah tombol:
+   Dilayani oleh Node: [ID Container]
+4. Buka terminal dan jalankan perintah berikut:
+   ```
+   docker-compose logs -f web
+   ```
+   Perintah ini digunakan untuk melihat log aktivitas dari service web secara real-time.
+6. Perhatikan output log yang muncul di terminal.
 
-```bash
-pip install requests
-python bot_attack.py
-```
-
-✅ **Hasil:**  
-- Log terminal bergerak cepat  
-- Stok berhenti tepat di **0**  
-- ❌ Tidak ada stok minus
+✅ Hasil:
+- ID Container terus berubah-ubah (misal: dari ...8367 ke ...7ff7).
+- Pada terminal, log menunjukkan request dilayani oleh container web yang berbeda-beda.
+- Hal ini membuktikan **Nginx Load Balancer** berhasil mendistribusikan beban ke beberapa replika server (Scalable).
 
 ---
 
-### 💥 Skenario C — Chaos Engineering (Fault Tolerance)
+### 💥B. Uji Reliability — Fault Tolerance (Desired State)
+Membuktikan sistem dapat dipulihkan dengan cepat ke kondisi ideal jika terjadi kegagalan.
 
-1. Cek container aktif:
-```bash
-docker ps
-```
+1. Cek daftar container yang sedang berjalan:
+    ```
+    docker ps
+    ```
+2. Sabotase: Matikan paksa salah satu container aplikasi:
+    ```
+    docker kill donpablo-web-1
+    ```
+3. Verifikasi: Website tetap dapat diakses karena trafik otomatis dialihkan ke container lain yang masih hidup.
 
-2. Matikan paksa salah satu container web:
-```bash
-docker kill donpablo-web-1
-```
+4. Recovery: Jalankan perintah sinkronisasi:
+    ```
+    docker-compose up -d
+    ```
+✅ Hasil: Orkestrator mendeteksi adanya kekurangan replika dan menghidupkan kembali container pengganti dalam hitungan detik. Sistem terbukti Reliable karena mampu kembali ke kondisi ideal (Desired State).
 
-3. Website tetap dapat diakses (failover sukses)
+---
 
-4. Recovery sistem:
-```bash
-docker-compose up -d
-```
+### 🛡️ C. Uji Security — Data Integrity (Race Condition Proof)
+*Membuktikan sistem aman dari kesalahan data (stok minus) saat terjadi trafik tinggi.*
 
-✅ **Hasil:**  
-Container otomatis hidup kembali
+Simulasi 500 pembeli secara bersamaan menggunakan script bot:
+
+1. Install dependency (jika belum):
+   ```
+   pip install requests
+   ```
+2. Jalankan simulasi serangan:
+   ```
+   python bot_attack.py
+   ```
+✅ Hasil:
+- Log terminal berjalan sangat cepat (High Concurrency)
+- Stok barang berhenti tepat di angka 0
+- Tidak terjadi stok minus (nilai negatif)
+- Sistem terbukti **Aman (Secure)** menjaga integritas data dengan Redis Atomic Lock
 
 ---
 
@@ -174,7 +192,7 @@ sum(rate(flash_sale_requests_total[1m])) by (status)
 | **M Alief Alfaridzi** | 1203230045 | Cloud Architect & Backend |
 | **Rafif Muhammad** | 1203230018 | Frontend & Documentation |
 
-**Informatika — Universitas Telkom**  
+**Informatika — Universitas Telkom Surabaya**  
 *Tugas Besar Mata Kuliah Komputasi Awan & Terdistribusi (2025/2026)*
 
 ---
