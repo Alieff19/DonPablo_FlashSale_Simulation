@@ -88,6 +88,10 @@ cd repo-ini
 ```
 docker-compose up -d --build
 ```
+Mematikan Service
+```
+docker compose down
+```
 
 ---
 
